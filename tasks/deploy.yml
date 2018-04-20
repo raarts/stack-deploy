@@ -12,7 +12,7 @@
   with_items: {{ docker_networks }}
 
 - name: Deploy product stack file
-  copy: src=./stack/{{ stack }}.yml dest=.
+  copy: src=./stacks/{{ stack }}.yml dest=.
 
 - name: Login to the registry
   command: docker login -u gitlab -p {{ token }} {{ docker_registry }}
