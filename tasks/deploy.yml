@@ -9,7 +9,7 @@
   docker_network:
     name: "{{ lookup('env', 'CI_PROJECT_PATH_SLUG') }}_{{ item }}_{{ lookup('env', 'ENV') }}"
     driver: overlay
-  with_items: {{ docker_networks }}
+  with_items: "{{ docker_networks }}"
 
 - name: Deploy product stack file
   copy: src=./stacks/{{ stack }}.yml dest=.
