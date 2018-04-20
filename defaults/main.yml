@@ -1,0 +1,5 @@
+---
+
+docker_networks: []
+docker_registry: ""
+debug: false

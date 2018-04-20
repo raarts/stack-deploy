@@ -1,0 +1,37 @@
+---
+# deploys the product.yml stack
+
+- name: Display all hosts
+  debug:
+    msg: "{{ inventory_hostname }}"
+
+- name: create networks
+  docker_network:
+    name: "{{ lookup('env', 'CI_PROJECT_PATH_SLUG') }}_{{ item }}_{{ lookup('env', 'ENV') }}"
+    driver: overlay
+  with_items: {{ docker_networks }}
+
+- name: Deploy product stack file
+  copy: src={{ stack }}.yml dest=.
+
+- name: Login to the registry
+  command: docker login -u gitlab -p {{ token }} {{ docker_registry }}
+
+- name: "debug: dump env variables"
+  shell: env > /tmp/env
+  environment: "{{ lookup('gitlab_env', 'COMMON', 'REVIEW', 'ENV')|combine(item) }}"
+  with_items:
+    - {'SWARM': "{{ lookup('env', 'SWARM') }}" }
+  when: debug
+
+- name: Actually deploy the stack
+  command: docker stack deploy -c {{ stack }}.yml {{ lookup('env', 'CI_PROJECT_PATH_SLUG') }}_{{ stack }}_{{ env }} --with-registry-auth
+  environment: "{{ lookup('gitlab_env', 'ENV', 'COMMON', 'REVIEW', 'ENV')|combine(item) }}"
+  with_items:
+    - {'SWARM': "{{ lookup('env', 'SWARM') }}" }
+
+- name: remove remote stack file
+  file:
+    path: "{{ stack }}.yml"
+    state: absent
+

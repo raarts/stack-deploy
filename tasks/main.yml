@@ -1,0 +1,7 @@
+---
+# tasks file for stack-deploy
+
+# Deploy the stack
+- include_tasks: deploy.yml
+  run_once: true
+
