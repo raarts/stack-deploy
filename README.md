@@ -15,6 +15,7 @@ None
 Role Variables
 --------------
 
+* stack: basename of the stack .yml file, expected in the ./stacks directory
 * docker_networks: array of docker network names to create
 * docker_registry: name of the registry to download images from
 * debug: if true leaves info on env variables in /tmp
