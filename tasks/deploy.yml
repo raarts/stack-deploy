@@ -17,21 +17,23 @@
 - name: Login to the registry
   command: docker login -u gitlab -p {{ token }} {{ docker_registry }}
 
+- name: Actually deploy the stack
+  command: docker stack deploy -c {{ stack }}.yml {{ lookup('env', 'CI_PROJECT_PATH_SLUG') }}_{{ stack }}_{{ env }} --with-registry-auth
+  environment: "{{ lookup('gitlab_env', 'ENV', 'COMMON', 'REVIEW', 'ENV')|combine(item) }}"
+  register: result
+  with_items:
+    - {'SWARM': "{{ lookup('env', 'SWARM') }}" }
+
 - name: "debug: dump env variables"
   shell: env > /tmp/env
   environment: "{{ lookup('gitlab_env', 'COMMON', 'REVIEW', 'ENV')|combine(item) }}"
   with_items:
     - {'SWARM': "{{ lookup('env', 'SWARM') }}" }
-  when: debug
-
-- name: Actually deploy the stack
-  command: docker stack deploy -c {{ stack }}.yml {{ lookup('env', 'CI_PROJECT_PATH_SLUG') }}_{{ stack }}_{{ env }} --with-registry-auth
-  environment: "{{ lookup('gitlab_env', 'ENV', 'COMMON', 'REVIEW', 'ENV')|combine(item) }}"
-  with_items:
-    - {'SWARM': "{{ lookup('env', 'SWARM') }}" }
+  when: debug or result is failed
 
 - name: remove remote stack file
   file:
     path: "{{ stack }}.yml"
     state: absent
+  when: debug or result is succeeded
 
