@@ -36,4 +36,3 @@
     path: "{{ stack }}.yml"
     state: absent
   when: debug or result is succeeded
-
