@@ -15,7 +15,7 @@
   copy: src=./stacks/{{ stack }}.yml dest=.
 
 - name: Login to the registry
-  command: docker login -u gitlab -p {{ token }} {{ docker_registry }}
+  command: echo "{{ token }}" | docker login -u gitlab-ci-token --password-stdin {{ docker_registry }}
 
 - name: Actually deploy the stack
   command: docker stack deploy -c {{ stack }}.yml {{ lookup('env', 'CI_PROJECT_PATH_SLUG') }}_{{ stack }}_{{ env }} --with-registry-auth
