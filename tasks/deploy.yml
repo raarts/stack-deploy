@@ -30,10 +30,16 @@
   environment: "{{ lookup('gitlab_env', 'COMMON', 'REVIEW', 'ENV')|combine(item) }}"
   with_items:
     - {'SWARM': "{{ lookup('env', 'SWARM') }}" }
-  when: debug or result is failed
+  when: debug is true or result is failed
 
 - name: remove remote stack file
   file:
     path: "{{ stack }}.yml"
     state: absent
-  when: debug or result is succeeded
+  when: debug is true or result is succeeded
+
+- name: check if deploy failed
+  debug:
+    msg: "successfully deployed"
+  failed_when: result is failed
+
