@@ -14,7 +14,7 @@
 - name: Deploy product stack file
   copy: src=./stacks/{{ stack }}.yml dest=.
 
-- name: Login to the registry
+- name: Login to {{ docker_registry }} using {{ docker_registry_user }} {{ docker_registry_password }} 
   command: echo "{{ docker_registry_password }}" | docker login -u "{{ docker_registry_user }}" --password-stdin "{{ docker_registry }}"
 
 - name: Actually deploy the stack
@@ -32,7 +32,7 @@
     - {'SWARM': "{{ lookup('env', 'SWARM') }}" }
   when: debug or result is failed
 
-- name: remove remote stack file
+- name: remove remote stack file {{ stack }}.yml
   file:
     path: "{{ stack }}.yml"
     state: absent
