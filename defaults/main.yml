@@ -1,5 +1,8 @@
 ---
 
 docker_networks: []
-docker_registry: ""
+docker_registry: "{{ lookup('env', 'CI_REGISTRY') }}"
+docker_registry_user: "{{ lookup('env', 'CI_REGISTRY_USER') }}"
+docker_registry_password: "{{ lookup('env', 'CI_REGISTRY_PASSWORD') }}"
 debug: false
+

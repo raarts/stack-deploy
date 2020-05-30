@@ -15,7 +15,7 @@
   copy: src=./stacks/{{ stack }}.yml dest=.
 
 - name: Login to the registry
-  command: echo "{{ token }}" | docker login -u gitlab-ci-token --password-stdin {{ docker_registry }}
+  command: echo "{{ docker_registry_password }}" | docker login -u "{{ docker_registry_user }}" --password-stdin "{{ docker_registry }}"
 
 - name: Actually deploy the stack
   command: docker stack deploy -c {{ stack }}.yml {{ lookup('env', 'CI_PROJECT_PATH_SLUG') }}_{{ stack }}_{{ env }} --with-registry-auth
@@ -26,7 +26,7 @@
     - {'SWARM': "{{ lookup('env', 'SWARM') }}" }
 
 - name: "debug: dump env variables"
-  shell: env > /tmp/env
+  shell: env > /tmp/$LOGNAME.docker.stack.deploy.env
   environment: "{{ lookup('gitlab_env', 'COMMON', 'REVIEW', 'ENV')|combine(item) }}"
   with_items:
     - {'SWARM': "{{ lookup('env', 'SWARM') }}" }
