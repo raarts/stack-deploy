@@ -39,7 +39,7 @@
   file:
     path: "{{ stack }}.yml"
     state: absent
-  when: debug or result is succeeded
+  when: not debug or result is succeeded
 
 - name: check if deploy failed
   debug:
